@@ -1,6 +1,6 @@
 import React, { useRef, useEffect } from 'react';
 import { SafeAreaView, StatusBar, TouchableOpacity, Dimensions, StyleSheet, Alert, Animated } from 'react-native';
-import { bossesData } from '../../assets/bossesdata'; // Adjust the import path as necessary
+import { bossesData } from '../../assets/bossesdata';
 import { Text, View } from '@/components/Themed';
 import AnimatedBossImage from '@/components/render/AnimatedBossImage';
 import { useGame } from '../GameContext';
