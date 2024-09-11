@@ -6,6 +6,8 @@ type GameContextType = {
   setCoins: React.Dispatch<React.SetStateAction<number>>;
   damage: number;
   setDamage: React.Dispatch<React.SetStateAction<number>>;
+  upgradeDamage: number;
+  setUpgradeDamage: React.Dispatch<React.SetStateAction<number>>;
   bossHealth: number;
   setBossHealth: React.Dispatch<React.SetStateAction<number>>;
   bossIndex: number;
@@ -30,7 +32,8 @@ export const useGame = () => {
 
 export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [coins, setCoins] = useState<number>(0);
-  const [damage, setDamage] = useState<number>(1);
+  const [damage, setDamage] = useState<number>(1); // Damage for manual hits
+  const [upgradeDamage, setUpgradeDamage] = useState<number>(0); // Damage for auto-hit
   const [bossHealth, setBossHealth] = useState<number>(bossesData[0].health);
   const [bossIndex, setBossIndex] = useState<number>(0);
   const [autoHitUpgrade, setAutoHitUpgrade] = useState(false);
@@ -60,7 +63,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   return (
     <GameContext.Provider value={{
-      coins, setCoins, damage, setDamage, bossHealth, setBossHealth, bossIndex, setBossIndex,
+      coins, setCoins, damage, setDamage, upgradeDamage, setUpgradeDamage, bossHealth, setBossHealth, bossIndex, setBossIndex,
       increaseCoins, applyDamageToBoss, autoHitUpgrade, setAutoHitUpgrade, animateText, setAnimateText
 
     }}>

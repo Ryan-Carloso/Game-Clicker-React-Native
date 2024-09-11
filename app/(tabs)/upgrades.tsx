@@ -3,10 +3,14 @@ import { Button, View, Text, StyleSheet, Alert, Animated } from 'react-native';
 import { useGame } from '../GameContext';
 
 const UpgradeScreen: React.FC = () => {
-  const { coins, setCoins, damage, setDamage, applyDamageToBoss, increaseCoins, autoHitUpgrade, setAutoHitUpgrade } = useGame();
-  const [upgradeCost1, setUpgradeCost1] = useState(10);
-  const [upgradeCost2, setUpgradeCost2] = useState(25);
-  
+  const { coins, setCoins, damage, setDamage, upgradeDamage, setUpgradeDamage, applyDamageToBoss, increaseCoins, autoHitUpgrade, setAutoHitUpgrade } = useGame();
+  const [upgradeCost1, setUpgradeCost1] = useState(1);
+  const [upgradeCost2, setUpgradeCost2] = useState(2);
+  const [upgradeCostIncrease1, setUpgradeCostIncrease1] = useState(5); // Initial increase for upgrade 1
+  const [upgradeCostIncrease2, setUpgradeCostIncrease2] = useState(10); // Initial increase for upgrade 2
+  const [upgradeCount1, setUpgradeCount1] = useState(0); // Track upgrades for attack 1
+  const [upgradeCount2, setUpgradeCount2] = useState(0); // Track upgrades for attack 2
+
   // Reference for the animated value
   const bounceValue = useRef(new Animated.Value(1)).current;
 
@@ -15,8 +19,8 @@ const UpgradeScreen: React.FC = () => {
     if (autoHitUpgrade) {
       interval = setInterval(() => {
         // Apply damage to the boss automatically
-        applyDamageToBoss(damage);
-        increaseCoins(damage);
+        applyDamageToBoss(upgradeDamage); // Use upgradeDamage for auto-hit
+        increaseCoins(upgradeDamage);
         // Start the bounce animation
         bounce();
       }, 1000); // Interval set to 1 second for demonstration
@@ -24,7 +28,7 @@ const UpgradeScreen: React.FC = () => {
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, [autoHitUpgrade, damage, applyDamageToBoss, increaseCoins]);
+  }, [autoHitUpgrade, upgradeDamage, applyDamageToBoss, increaseCoins]);
 
   const bounce = () => {
     bounceValue.setValue(1); // Reset to original scale
@@ -46,8 +50,11 @@ const UpgradeScreen: React.FC = () => {
   const handleUpgrade1 = () => {
     if (coins >= upgradeCost1) {
       setCoins(coins - upgradeCost1);
-      setDamage(damage + 1);
-      setUpgradeCost1(upgradeCost1 + 10);
+      setUpgradeDamage(upgradeDamage + 0.2); // Increase upgradeDamage
+      setUpgradeCost1(upgradeCost1 + upgradeCostIncrease1); // Increase cost by the current increase amount
+      setUpgradeCostIncrease1(upgradeCostIncrease1 + 2); // Increase the increase amount by 2 for the next upgrade
+      setUpgradeCount1(upgradeCount1 + 1); // Increment upgrade count for attack 1
+      setAutoHitUpgrade(true); // Automatically enable auto-hit when upgrading attack 1
     } else {
       Alert.alert('Insufficient Coins', 'You do not have enough coins for this upgrade.');
     }
@@ -56,32 +63,25 @@ const UpgradeScreen: React.FC = () => {
   const handleUpgrade2 = () => {
     if (coins >= upgradeCost2) {
       setCoins(coins - upgradeCost2);
-      setDamage(damage + 2);
-      setUpgradeCost2(upgradeCost2 + 15);
+      setUpgradeDamage(upgradeDamage + 0.5); // Increase upgradeDamage
+      setUpgradeCost2(upgradeCost2 + upgradeCostIncrease2); // Increase cost by the current increase amount
+      setUpgradeCostIncrease2(upgradeCostIncrease2 + 3); // Increase the increase amount by 3 for the next upgrade
+      setUpgradeCount2(upgradeCount2 + 1); // Increment upgrade count for attack 2
+      setAutoHitUpgrade(true); // Automatically enable auto-hit when upgrading attack 2
     } else {
       Alert.alert('Insufficient Coins', 'You do not have enough coins for this upgrade.');
     }
   };
 
-  const handleAutoHitUpgrade = () => {
-    const autoHitCost = 1; // Define the cost for the auto-hit upgrade
-    if (coins >= autoHitCost && !autoHitUpgrade) {
-      setCoins(coins - autoHitCost);
-      setAutoHitUpgrade(true);
-    } else if (!autoHitUpgrade) {
-      Alert.alert('Insufficient Coins', 'You do not have enough coins for the auto-hit upgrade.');
-    }
-  };
+  // Remove the handleAutoHitUpgrade function as it's no longer needed
 
   return (
     <View style={styles.container}>
-      <Text>Coins: {coins}</Text>
-      <Text>Current Damage: {damage}</Text>
-      <Button title={`Upgrade Attack 1 (Cost: ${upgradeCost1})`} onPress={handleUpgrade1} />
-      <Button title={`Upgrade Attack 2 (Cost: ${upgradeCost2})`} onPress={handleUpgrade2} />
-      <Animated.View style={{ transform: [{ scale: bounceValue }] }}>
-        <Button title="Auto-Hit Upgrade" onPress={handleAutoHitUpgrade} disabled={autoHitUpgrade} />
-      </Animated.View>
+      <Text>Coins: {coins.toFixed(1)}</Text>
+      <Text>Current Damage: {upgradeDamage.toFixed(1)}</Text>
+      <Button title={`Clicker (Cost: ${upgradeCost1.toFixed(1)}, Upgrades: ${upgradeCount1})`} onPress={handleUpgrade1} />
+      <Button title={`Hero (Cost: ${upgradeCost2.toFixed(1)}, Upgrades: ${upgradeCount2})`} onPress={handleUpgrade2} />
+      {/* Remove the Animated.View and Button for the auto-hit upgrade */}
     </View>
   );
 };
